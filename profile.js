@@ -1,0 +1,2 @@
+function loadProfile() {}
+function checkPermission() {}
