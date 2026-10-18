@@ -1,13 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Registration</title>
 </head>
 <body>
     <h1>Register New Student</h1>
-    <form>
-        <input type="text" placeholder="Full Name" />
+    <form id="registrationForm">
+        <input type="text" id="name" placeholder="Full Name" required />
+        <input type="email" id="email" placeholder="Email Address" required />
         <button type="submit">Register</button>
     </form>
+
+    <div id="message"></div>
+
+    <script>
+        const form = document.getElementById('registrationForm');
+        const messageDiv = document.getElementById('message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+
+            try {
+                const response = await fetch('/api/students', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    messageDiv.style.color = 'green';
+                    messageDiv.textContent = `Student registered successfully! ID: ${result.data.id}`;
+                    form.reset();
+                } else {
+                    messageDiv.style.color = 'red';
+                    messageDiv.textContent = result.message;
+                }
+            } catch (error) {
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = 'Error connecting to server';
+            }
+        });
+    </script>
 </body>
 </html>
