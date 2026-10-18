@@ -9,6 +9,9 @@ const PORT = process.env.PORT || 5000;
 // Middleware to parse JSON bodies from incoming requests
 app.use(express.json());
 
+// Serve static frontend files (HTML, CSS, JS) from root
+app.use(express.static('.'));
+
 // In-memory student database (temporary mock data)
 const students = [
     { id: 1, name: "Alice Johnson", email: "alice@example.com" }
