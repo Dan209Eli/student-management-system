@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Registration</title>
+    <title>Student Registration & Directory</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form { margin-bottom: 20px; }
+        ul { list-style-type: none; padding: 0; }
+        li { padding: 8px; background: #f4f4f4; margin-bottom: 5px; border-radius: 4px; }
+    </style>
 </head>
 <body>
     <h1>Register New Student</h1>
@@ -15,10 +21,34 @@
 
     <div id="message"></div>
 
+    <h2>Registered Students List</h2>
+    <ul id="studentsList"></ul>
+
     <script>
         const form = document.getElementById('registrationForm');
         const messageDiv = document.getElementById('message');
+        const studentsList = document.getElementById('studentsList');
 
+        // Function to fetch and display students from GET /api/students
+        async function fetchStudents() {
+            try {
+                const response = await fetch('/api/students');
+                const result = await response.json();
+
+                if (result.success) {
+                    studentsList.innerHTML = '';
+                    result.data.forEach(student => {
+                        const li = document.createElement('li');
+                        li.textContent = `#${student.id} - ${student.name} (${student.email})`;
+                        studentsList.appendChild(li);
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching students list:', error);
+            }
+        }
+
+        // Handle Form Submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -36,8 +66,9 @@
 
                 if (result.success) {
                     messageDiv.style.color = 'green';
-                    messageDiv.textContent = `Student registered successfully! ID: ${result.data.id}`;
+                    messageDiv.textContent = `Student registered successfully!`;
                     form.reset();
+                    fetchStudents(); // Refresh list dynamically!
                 } else {
                     messageDiv.style.color = 'red';
                     messageDiv.textContent = result.message;
@@ -47,6 +78,9 @@
                 messageDiv.textContent = 'Error connecting to server';
             }
         });
+
+        // Initial fetch on page load
+        fetchStudents();
     </script>
 </body>
 </html>
